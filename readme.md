@@ -25,7 +25,6 @@ Then, because simple tutorials like *Hello Triangle* do not convey how a technol
 - [WebGPU as successor to WebGL](#webgpu-as-successor-to-webgl)
 - [WebGPU Shading Language](#webgpu-shading-language)
 - [Hello Triangle](#hello-triangle)
-- [WebGPU Compute shader]()
 - [WebGPU for developing games](#webgpu-for-developing-games)
     - [ECS - Entity Component System](#ecs---entity-component-system)
     - [Subdivision with Compute Shaders](#subdivision-with-compute-shaders)
@@ -1008,48 +1007,57 @@ It will be forever a technology hidden behind brilliant abstractions, powering p
 
 # Demo 
 
-If you want to see the demo in action, pull the repo, install a node environment with typescript and pnpm, run pnpm dev and open the browser...
-or just visit my [Github Pages](TODO).
+If you want to see the demo in action, pull the repo, install a node environment with TypeScript and pnpm, run pnpm dev, and open the browser...
+or just visit my [Github Pages](https://lorenz-lb.github.io/?thepond).
 
 ## Some things to notice
-To create this demo I have coded many things which won't be noticed until you look at the code or have experience in the field of graphics programming. 
-Here a quick list of features with their corresponding code files.
+To create this demo, I have coded many things that won't be noticed until you look at the code or have experience in the field of graphics programming. 
+Here's a quick list of features with their corresponding code files.
 What I have created includes but is not limited to: 
 
 
-- The concept of Materials and the management of those
-A material contains everything needed to give a mesh its look. This includes textures, material properties, shaders and so on.
+- The concept of materials and the management of those
+A material contains everything needed to give a mesh its look. This includes textures, material properties, shaders, and so on.
+([material.ts](./src/routes/thepond/view/material.ts), [materialManager.ts](./src/routes/thepond/view/materialManager.ts))
 
-- Different renderpasses to render different parts of the scene like opaque objects, transparent objects and hud elements which are  using a orthogonal projection
+- Different render passes to render different parts of the scene, like opaque objects, transparent objects, and HUD elements, which are using an orthogonal projection
+([renderSystem.ts](./src/routes/thepond/systems/renderSystem.ts))
 
 - A system to render text 
 Text is inherently hard to draw because there is no concept of text when rendering. 
-You need to create a dynamic mesh on the fly which then gets a texture of the text.
-For that you need to also have a font atlas which is just all letters and icons you want to have in your font in a texture. 
+You need to create a dynamic mesh on the fly, which then gets a texture of the text.
+For that you also need to have a font atlas, which is just all the letters and icons you want to have in your font in a texture. 
+([textMeshGeneratorSystem.ts](./src/routes/thepond/systems/textMeshGeneratorSystem.ts), [hudRenderSystem.ts](./src/routes/thepond/systems/hudRenderSystem.ts), [textShader.wgsl](./src/routes/thepond/shaders/textShader.wgsl))
 
 - A parallax effect in the background 
 The parallax effect is done by splitting a background image in multiple layers and scrolling them at different speeds to create the illusion of movement and depth
+([scrollShader.wgsl](./src/routes/thepond/shaders/scrollShader.wgsl))
 
 - An animation system
-animating the fishing line of the boat while swimming and fishing is done with a texture atlas.
-Having a big texture which contains all animations of the boat and just choosing which part to render in which state, allows for lower GPU usage because textures do not need to be replaced and reuploaded to the GPUs memory.  
+Animating the fishing line of the boat while swimming and fishing is done with a texture atlas.
+Having a big texture that contains all animations of the boat and just choosing which part to render in which state allows for lower GPU usage because textures do not need to be replaced and reuploaded to the GPU's memory.  
+([spriteSystem.ts](./src/routes/thepond/systems/spriteSystem.ts))
 
 - Making procedural waves
-To create waves on the ocean a vertex shader is used.
+To create waves on the ocean, a vertex shader is used.
 It calculates a y-offset based on the xz-position of the vertex.
-Normally you would use noise (e.g. perlin noise) but here I am just using several overlaid sin functions.  
+Normally you would use noise (e.g., Perlin noise), but here I am just using several overlaid sin functions.  
+([waterSurfaceShader.wgsl](./src/routes//thepond/shaders/waterSurfaceShader.wgsl))
 
 - Moving the boat with the waves
-To move the boat with the waves the calculations from the vertex shader of the waves are also applied to the vertices of the boat.
-To rotate the boat so that it swims up and down the waves a approximation of the slope of the current waves position is used to create a rotation matrix. All done in the vertex shader of the boat
+To move the boat with the waves, the calculations from the vertex shader of the waves are also applied to the vertices of the boat.
+To rotate the boat so that it swims up and down the waves, an approximation of the slope of the current wave position is used to create a rotation matrix. All done in the vertex shader of the boat.
+([playerShader.wgsl](./src/routes//thepond/shaders/playerShader.wgsl))
+
 
 - Coloring of the Water
-To color the water the waters fragment shader uses the y-offset of the vertices.
-There are two interpolations used. The flat interpolation ensures that the low parts of the water are dark and the high parts are bright while creating stylized low poly look.
+To color the water, the water's fragment shader uses the y-offset of the vertices.
+There are two interpolations used. The flat interpolation ensures that the low parts of the water are dark and the high parts are bright while creating a stylized low-poly look.
 To highlight the tops of the waves often having bright white foam in real life, a smooth interpolation is used. You can see the difference when observing the borders of the triangles.
-While you can see the borders within the low part of a wave, you cant see borders in the foam part. The foam appears uniform and smooth.
+While you can see the borders within the low part of a wave, you can't see borders in the foam part. The foam appears uniform and smooth.
+([waterSurfaceShader.wgsl](./src/routes//thepond/shaders/waterSurfaceShader.wgsl))
 
-I highly recommend you to also look at the code to see how much work is needed to do the most basic things most of us just take for granted when thinking of video games.
+I highly recommend you also look at the code to see how much work is needed to do the most basic things most of us just take for granted when thinking of video games.
 
 ## Controls
 
